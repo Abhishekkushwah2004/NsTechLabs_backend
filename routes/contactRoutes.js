@@ -17,7 +17,8 @@ router.post('/contact', async (req, res) => {
 
     // ✅ email content
     const mailOptions = {
-        from: email,
+        from: `"NS TechLabs" <${process.env.EMAIL_USER}>`,
+        replyTo: email,
         to: 'akushwaha2021@nstechlabs.in', // 👉 your email to receive the message
         subject: `New Contact from ${name}`,
         html: `

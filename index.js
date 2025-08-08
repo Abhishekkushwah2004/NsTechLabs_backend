@@ -10,9 +10,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get('/api',(req,res)=>{
-  res.send("server is working");
-})
+
 // Routes
 const contactRoutes = require('./routes/contactRoutes');
 const proposalRoutes = require('./routes/proposalRoutes');
