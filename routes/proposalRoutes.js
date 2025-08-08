@@ -30,7 +30,7 @@ router.post('/proposal', async (req, res) => {
 
     const mailOptions = {
         from: email,
-        to: 'akushwaha2021@nstechlabs.in',
+        to: 'abhiskushwah2004@gmail.com',
         subject: `New Proposal Request from ${fullName}`,
         html: `
             <h2>Proposal Request Details</h2>
