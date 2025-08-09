@@ -1,57 +1,54 @@
-require('dotenv').config();
-const express = require('express');
-const nodemailer = require('nodemailer');
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import nodemailer from "nodemailer";
 
-const router = express.Router();
+dotenv.config();
 
-router.post('/proposal', async (req, res) => {
-    console.log("📥 Incoming request body:", req.body);
+const app = express();
+app.use(express.json());
+app.use(cors({ origin: process.env.FRONTEND_URL || "*" }));
 
-    const { fullName, email, subject, mobile, message, budget, proposalOption } = req.body;
+app.post("/contact/proposal", async (req, res) => {
+  const { fullName, email, subject, mobile, budget, proposalOption, message } =
+    req.body;
 
-    const formData = {
-        fullName,
-        email,
-        subject,
-        mobile,
-        message,
-        budget,
-        proposalOption
-    };
+  if (!fullName || !email || !subject || !mobile || !message) {
+    return res.status(400).json({ message: "Please fill all required fields" });
+  }
 
-    // ✅ Configure transporter using Gmail + App Password
+  try {
     const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            user: process.env.EMAIL_USER,  // Your Gmail address
-            pass: process.env.EMAIL_PASS   // App password (not your login password)
-        }
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+      }
     });
 
     const mailOptions = {
-        from: email,
-        to: 'abhiskushwah2004@gmail.com',
-        subject: `New Proposal Request from ${fullName}`,
-        html: `
-            <h2>Proposal Request Details</h2>
-            <p><strong>Full Name:</strong> ${fullName}</p>
-            <p><strong>Email:</strong> ${email}</p>
-            <p><strong>Mobile:</strong> ${mobile}</p>
-            <p><strong>Subject:</strong> ${subject}</p>
-            <p><strong>Message:</strong> ${message}</p>
-            <p><strong>Proposal Option:</strong> ${proposalOption}</p>
-            <p><strong>Budget:</strong> ${budget} USD</p>
-        `
+      from: email,
+      to: process.env.EMAIL_USER,
+      subject: `New Proposal Request: ${subject}`,
+      text: `
+Name: ${fullName}
+Email: ${email}
+Mobile: ${mobile}
+Budget: ${budget}
+Proposal Option: ${proposalOption}
+Message: ${message}
+      `
     };
 
-    try {
-        await transporter.sendMail(mailOptions);
-        console.log('✅ Email sent successfully');
-        res.status(200).json({ success: true, message: 'Proposal submitted and email sent!' });
-    } catch (error) {
-        console.error('❌ Email failed to send:', error);
-        res.status(500).json({ success: false, message: 'Failed to send email.' });
-    }
+    await transporter.sendMail(mailOptions);
+
+    res.status(200).json({ message: "Proposal sent successfully!" });
+  } catch (err) {
+    console.error("Error sending email:", err);
+    res.status(500).json({ message: "Failed to send proposal" });
+  }
 });
 
-module.exports = router;
+app.listen(5000, () => {
+  console.log("Server running on port 5000");
+});
