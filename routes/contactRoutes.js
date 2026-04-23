@@ -35,7 +35,7 @@ router.post('/contact', async (req, res) => {
         res.status(200).json({ success: true, message: 'Form submitted and email sent successfully!' });
     } catch (err) {
         console.error('❌ Email failed:', err);
-        res.status(500).json({ success: false, message: 'Failed to send email.' });
+        res.status(500).json({ success: false, message: 'Failed to the send email.' });
     }
 });
 
